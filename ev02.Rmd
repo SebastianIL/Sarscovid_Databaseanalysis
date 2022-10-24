@@ -1,0 +1,318 @@
+---
+title: "Evidencia_2"
+author: "Sebastián Iñigo"
+date: "`r Sys.Date()`"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Parte 1 Link del video
+
+<https://youtu.be/yz8x5Z1E3FQ>
+
+Parte 2
+```{r}
+library(Biostrings)
+library(seqinr)
+library(adegenet)
+library(ape)
+library(ggtree)
+library(DECIPHER)
+library(viridis)
+library(ggplot2)
+```
+
+```{r}
+PAISES <- c(  "ON402869", "ON148312", "OL989073", "MT470219", "ON148330", "ON365977", "OW443684", " OW518845", "ON380441", "OL989065", "OL989058", "OM758316", "MZ047082", "ON248600", "OM692350", "MW340907", "MT192772", "ON376063", "MZ359830", "OL869974")
+
+paises_sequences <- read.GenBank(PAISES)
+
+str(paises_sequences)
+
+write.dna(paises_sequences,  
+          file ="paises_seqs.fasta", 
+          format = "fasta", 
+          append = FALSE, 
+          nbcol = 6, 
+          colsep = " ", 
+          colw = 10)
+
+paises_seq_not_align <- readDNAStringSet("paises_seqs.fasta", format = "fasta")
+paises_seq_not_align
+
+
+paises_seq_not_align <- OrientNucleotides(paises_seq_not_align)
+
+paises_seq_align <- AlignSeqs(paises_seq_not_align)
+
+writeXStringSet(virus_seq_align, file="paises_seq_align.fasta")
+
+
+
+```
+
+```{r}
+library("seqinr")
+paisesfasta<-read.fasta("C:/Users/oso_p/Documents/Oso_Tec/2do_semestre/Analisis_bio/paises_seq_align.fasta")
+
+
+cuentas <- function(seq){
+  contadorA <-0
+  contadorT <-0
+  contadorC <-0
+  contadorG <-0
+  
+  nl <- length(seq)
+  
+  for(i in seq){
+    
+    if(i=="A" || i=="a"){
+      contadorA = contadorA + 1
+    }
+    else if(i=="T" || i=="t") {
+      contadorT = contadorT + 1
+    }
+    else if(i=="C" || i=="c") {
+      contadorC = contadorC + 1
+    }
+    else if(i=="G" || i=="g") {
+      contadorG = contadorG + 1
+    }
+  }
+  
+  vec<- c(contadorA,contadorT,contadorG, contadorC)
+  return(vec)
+}
+
+colorpalette<- c('#BFFFF0', '#F0FFC2', '#FFE4C0', '#FFBBBB','#F76E11','#261C2C', '#3E2C41', '#5C527F', '#6E85B2','#FF9F45','#FFBC80','#FC4F4F','#A97155','#FFEF82', '#EFD345', '#BABD42', '#82954B','#E4D1B9', '#BE8C63','#8FBDD3')
+
+colorpalette1<- c('#BFFFF0', '#F0FFC2', '#FFE4C0', '#FFBBBB','#F76E11')
+
+colorpalette2<- c('#261C2C', '#3E2C41', '#5C527F', '#6E85B2','#FF9F45','#FFBC80','#FC4F4F','#A97155')
+
+colorpalette3<-c('#FFEF82', '#EFD345', '#BABD42', '#82954B','#E4D1B9', '#BE8C63')
+
+colorpalette4<-c('#8FBDD3')
+
+
+#mundo1<- c("Usa","Brazil", "Argentina", "Colombia", "Mexico","France","Germany","UK","Russia","Italy","Spain", "Poland","NLD","India","Turkey","Vietnam","Japan","Iran","KOR","Australia")
+
+america<-c("Usa","Brazil", "Argentina", "Colombia", "Mexico")
+europa<-c("France","Germany","UK","Russia","Italy","Spain", "Poland","NLD")
+asia<-c("India","Turkey","Vietnam","Japan","Iran","KOR")
+oceania<-c("Australia")
+
+funG<-(paises<-sapply(paisesfasta, cuentas))
+
+par(mar=c(4,3,0,1))
+virus<-barplot(matrix(c(funG), nrow=20, byrow=T), beside=T,  col = colorpalette, names.arg= c("A","T,","G", "C"))
+legend("topright", legend = america , 
+     col = colorpalette1 ,bty = "n", pch=18 , pt.cex = 1, cex = 0.6, horiz = FALSE, inset = c(0.3, 0.001))
+legend("topright", legend = europa , 
+     col = colorpalette2 ,bty = "n", pch=18 , pt.cex = 1, cex = 0.6, horiz = FALSE, inset = c(0.2, 0.001))
+legend("topright", legend = asia , 
+     col = colorpalette3 ,bty = "n", pch=18 , pt.cex = 1, cex = 0.6, horiz = FALSE, inset = c(0.1, 0.001))
+legend("topright", legend = oceania , 
+     col = colorpalette4 ,bty = "n", pch=18 , pt.cex = 1, cex = 0.6, horiz = FALSE, inset = c(0.02, 0.001))
+
+```
+
+
+```{r}
+PAISES <- c(  "ON402869", "ON148312", "OL989073", "MT470219", "ON148330", "ON365977", "OW443684", " OW518845", "ON380441", "OL989065", "OL989058", "OM758316", "MZ047082", "ON248600", "OM692350", "MW340907", "MT192772", "ON376063", "MZ359830", "OL869974")
+
+virus_sequences <- read.GenBank(PAISES)
+
+str(virus_sequences)
+
+attributes(virus_sequences)
+names(virus_sequences)
+attr(virus_sequences, "pais")
+
+write.dna(virus_sequences,  
+          file ="virus_seqs.fasta", 
+          format = "fasta", 
+          append = FALSE, 
+          nbcol = 6, 
+          colsep = " ", 
+          colw = 10)
+
+virus_seq_not_align <- readDNAStringSet("virus_seqs.fasta", format = "fasta")
+
+virus_seq_not_align <- OrientNucleotides(virus_seq_not_align)
+
+virus_seq_align <- AlignSeqs(virus_seq_not_align)
+
+BrowseSeqs(virus_seq_align, highlight=0)
+
+writeXStringSet(virus_seq_align, file="virus_seq_align.fasta")
+
+virus_aligned <- read.alignment("virus_seq_align.fasta", format = "fasta")
+
+matriz_distancia <- dist.alignment(virus_aligned, matrix = "similarity")
+
+temp <- as.data.frame(as.matrix(matriz_distancia))
+table.paint(temp, cleg=0, clabel.row=.5, clabel.col=.5) + scale_color_viridis()
+
+virus_tree <- nj(matriz_distancia)
+class(virus_tree) 
+
+virus_tree <- ladderize(virus_tree)
+
+plot(virus_tree, cex = 0.6)
+title("20 pasises con mas casos")
+```
+
+### Interpretación de gráficas
+-
+Como se puede apreciar en la grafica, en la mayoría de los paises comparten una cantidad similar de Adeninas y Timinas con ciertos paise, esto debido a que los paises a comparar se encuentran cercanos del otro, como son el caso de Estados Unidos y México y Argentina con Brasil. De misma forma vemos que las barras mas constantes son la de los paises asiaticos, con ello se interpreta que en este continente es donde el virus varío menos. Y donde varío más fue entre la parte norte del continente americano (Mexico, Estados Unidos) con la parte sur del continente americano (Argentina, Brasil, Colombia).
+
+### Interpretación de arbol
+-
+Gracias al arbol se puede apreciar claramente las similitudes entre cada secuencia, la parte inferior se puede observar las mayores similitudes, las cuales sorpresivamente corresponden al país de Francia("ON365977") y al de Irán ("ON376063"). Con esta información se puede interpretar que uno de estos paises mudó el virus al otro continente mientras el otro país, como pudo haber sido Francia a Irán (Europa a Asia) ó Irán a Francia (Asia a Europa).
+### Referencias
+
+```{r}
+citation("seqinr")
+citation("dplyr")
+citation("ape")
+citation("phangorn")
+citation("phytools")
+citation("geiger")
+citation("ggmsa")
+```
+
+
+NCBI. (s. f.). NCBI - Virus. https://www.ncbi.nlm.nih.gov/labs/virus/vssi/#/
+
+Location/Qualifiers
+     source          1..29705
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/AUS/A12-WW-209C/2021"
+                     /isolation_source="wastewater"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:2697049"
+                     /country="Australia"
+                     /collection_date="2021-11-25"
+                     /collected_by="CSIRO Australia"
+
+source          1..29800
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/IRN/12624/2020"
+                     /isolation_source="throat swab"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:2697049"
+                     /country="Iran"
+                     /collection_date="2020-04-28"
+                     
+source          1..29747
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/JPN/HiroFH232c/2022"
+                     /isolation_source="saliva"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:2697049"
+                     /country="Japan"
+                     /collection_date="2022-01-04"
+                     
+source          1..29891
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/VNM/nCoV-19-01S/2020"
+                     /isolation_source="oro-pharyngeal"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:2697049"
+                     /country="Viet Nam: Ho Chi Minh city"
+                     /collection_date="22-Jan-2020"
+                     /collected_by="Pasteur Institute in Ho Chi Minh and Cho
+                     Ray Hospital"
+                     /note="passage details: Vero E6
+                     
+source          1..29813
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/TUR/DENIZLI_PAU_07/2020"
+                     /isolation_source="nasal swab"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:2697049"
+                     /country="Turkey"
+                     /collection_date="2020-07-18"
+                     
+source          1..29848
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/KOR/KCDC03-NCCP43326/2021"
+                     /isolation_source="throat swab"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:2697049"
+                     /country="South Korea"
+                     /collection_date="2021-02-24"
+                     
+source          1..29816
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-
+                     2/Canine/IND/A4N_Dog_Gujarat_India/2021"
+                     /isolation_source="nasal swab"
+                     /host="canine"
+                     /db_xref="taxon:2697049"
+                     /country="India"
+                     /collection_date="2021-05-26"
+                     /collected_by="Dr. Arun C. Patel"
+                     
+source          1..29884
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/POL/IHG_PAS_25_P7908/2020"
+                     /isolation_source="oronasopharynx"
+                     /host="Homo sapiens"
+                     /db_xref="taxon:2697049"
+                     /country="Poland"
+                     /collection_date="2020-03-15"
+                     
+source          1..29833
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/Neovison vison/NLD/NB68-08/2020"
+                     /isolation_source="throat swab"
+                     /host="Neogale vison"
+                     /db_xref="taxon:2697049"
+                     /country="Netherlands"
+                     /collection_date="2020-11-03"
+                     
+source          1..29903
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/ESP/200324-28/2020"
+                     /isolation_source="throat swabs"
+                     /host="Homo sapiens;Male,age 18"
+                     /db_xref="taxon:2697049"
+                     /country="Spain"
+                     /collection_date="2020-03-16"
+                     
+source          1..29903
+                     /organism="Severe acute respiratory syndrome coronavirus
+                     2"
+                     /mol_type="genomic RNA"
+                     /isolate="SARS-CoV-2/human/ITA/201109-49/2020"
+                     /isolation_source="throat swabs"
+                     /host="Homo sapiens;Female,age 51"
+                     /db_xref="taxon:2697049"
+                     /country="Italy"
+                     /collection_date="2020-10-27"
+                     
